@@ -23,8 +23,11 @@ def main():
     #Offense level/abilities/ability power/attack damage
     offense_champion_Data = get_champion_Data(offense_champion)
     offense_stats_At_Level = get_stats_At_Level(offense_champion_Data, offense_level)
+    offense_abilities_At_Level = get_abilities_At_Level(offense_champion_Data, offense_stats_At_Level, offense_level)
 
-    print(defense_champion, "\n", defense_stats_At_Level, "\n", offense_champion, "\n", offense_stats_At_Level)
+
+
+    #print(defense_champion, "\n", defense_stats_At_Level, "\n", offense_champion, "\n", offense_stats_At_Level)
 
 
 
@@ -75,6 +78,43 @@ def get_stats_At_Level(champion_Data, level):
         stats_At_Level[stat_name] = stat_At_Level
 
     return stats_At_Level
+
+def get_abilities_At_Level(champion_Data, stats_At_Level, level):
+    abilities_At_Level = []
+    skill_points = 5 - 1 
+    for ability_name, ability_data in champion_Data["abilities"].items():
+        damage_Sum = 0
+        if isinstance(ability_data["effects"], (list, tuple)):
+            for effect in ability_data["effects"]:  # Iterate over each effect
+                if "leveling" in effect and "modifiers" in effect["leveling"]:
+                    for modifier in effect["leveling"]["modifiers"]:
+                        if modifier["units"] == "":
+                            damage_Sum += modifier["values"][skill_points - 1]
+                        elif modifier["units"] == "% AP":
+                            damage_Sum += modifier["values"][skill_points - 1] * stats_At_Level["ap"]
+                        elif modifier["units"] == "% AD":
+                            damage_Sum += modifier["values"][skill_points - 1] * stats_At_Level["ad"]
+        else:
+            print(f"Unexpected structure in effects for ability {ability_name}: {ability_data['effects']}")
+
+        
+    print(abilities_At_Level)
+        
+        
+        
+        
+    abilities_At_Level[ability] = 0
+
+
+
+
+
+
+
+
+    
+    return abilities_At_Level
+
 
 
 def get_item_Stats(item):
